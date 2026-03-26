@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+    <div class="nav-left">
+        <a href="#" class="logo">UNO</a>
+    </div>
+    <div class="nav-right">
+        <a href="#" id="nav-accueil">Accueil</a>
+        <a href="#" id="nav-parties" style="display:none;">Parties</a>
+        <a href="#" id="nav-connexion">Connexion</a>
+        <div id="nav-pseudo-div">
+            <img src="static/images/icons/user.png" alt="" width="16px" height="16px">
+            <p id="nav-pseudo"></p>
+        </div>
+        
+        <a href="#" id="nav-deconnexion" style="display:none;">Deconnexion</a>
+    </div>
+</nav>
+
+<!-- Landing -->
+<div id="landing-section" class="glass">
+    <h1>Welcome to UNO Online</h1>
+    <p style="color:var(--text-dim);margin-bottom:2rem;">Le meilleur jeu de cartes dans votre navigateur.</p>
+    <button id="go-to-login" style="width:auto;padding:12px 30px;margin:0 auto;display:block;">Se connecter</button>
+</div>
+
+<!-- Authentification -->
+<div id="login-section" class="glass" style="display:none;">
+    <h1 id="auth-title">Connexion</h1>
+    <p id="auth-subtitle" style="color:var(--text-dim);margin-bottom:20px;">Rejoignez la partie</p>
+
+    <input type="text"     id="pseudo"   placeholder="Nom d'utilisateur" autocomplete="off">
+    <input type="password" id="password" placeholder="Mot de passe">
+
+    <select id="role">
+        <option value="player">Joueur</option>
+        <option value="admin">Administrateur</option>
+    </select>
+
+    <div id="admin-password-container" style="display:none;">
+        <input type="password" id="admin-password" placeholder="Code secret Administrateur">
+    </div>
+
+    <button id="auth-btn">Se connecter</button>
+
+    <p style="margin-top:1.5rem;font-size:0.9rem;color:var(--text-dim);">
+        <span id="auth-mode-text">Pas encore de compte ?</span>
+        <a href="#" id="auth-toggle-btn" style="color:var(--primary-color);text-decoration:none;font-weight:700;">S'inscrire</a>
+    </p>
+</div>
+
+<!-- Section lobbies (joueur) -->
+<div id="game-section" class="glass" style="display:none;">
+    <div class="status-bar">
+        <div>
+            <h2>Lobbies Disponibles</h2>
+            <div id="player-count-container">
+                <span id="player-count">0</span> joueurs en ligne
+            </div>
+        </div>
+        <div id="status">
+            Statut : <span id="connection-status" class="disconnected">Deconnecte</span>
+        </div>
+    </div>
+
+    <div id="lobby-list"></div>
+    <div id="messages" style="margin-top:2rem;"></div>
+</div>
+
+<!-- Plateau de jeu -->
+<div id="board-section" style="display:none;">
+
+    <!-- Barre d'infos -->
+    <div id="board-info-bar">
+        <div class="info-block">
+            <span class="info-label">Tour : </span>
+            <strong id="board-current-player">...</strong>
+        </div>
+        <div class="info-block">
+            <span class="info-label">Couleur</span>
+            <div id="board-color-dot"></div>
+        </div>
+        <div class="info-block">
+            <span class="info-label">Sens</span>
+            <span id="board-direction-icon">↻</span>
+        </div>
+        <div class="info-block">
+            <span class="info-label">Pioche</span>
+            <span id="board-deck-size">—</span>
+        </div>
+    </div>
+
+    <!-- Table de jeu -->
+    <div id="board-table">
+
+        <!-- Adversaire du dessus -->
+        <div id="board-opponent-top"></div>
+
+        <!-- Rangée centrale -->
+        <div id="board-middle">
+            <div id="board-opponent-left"></div>
+
+            <!-- Piles -->
+            <div id="board-center">
+                <div id="draw-pile" class="pile" title="Cliquer pour piocher">
+                    <div class="card card-img card-back"><img src="/static/images/UNO_others/Verso.png" alt="dos" draggable="false"></div>
+                    <div class="pile-label">Pioche</div>
+                </div>
+                <div id="discard-pile" class="pile">
+                    <div id="top-card" class="card"></div>
+                    <div class="pile-label">Defausse</div>
+                </div>
+            </div>
+
+            <div id="board-opponent-right"></div>
+        </div>
+
+        <!-- Zone joueur -->
+        <div id="board-player-zone">
+            <div id="board-actions">
+                <button id="btn-uno"  class="btn-uno">UNO !</button>
+                <button id="btn-pass" class="btn-pass" style="display:none;">Passer</button>
+            </div>
+            <div id="board-hand-area">
+                <div id="board-hand-label">Votre main</div>
+                <p id="board-hand-cards-amount"></p>
+                <div id="board-hand"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Notification en jeu -->
+    <div id="board-notif"></div>
+</div>
+
+<!-- Modal choix de couleur -->
+<div id="color-modal" style="display:none;">
+    <div id="color-modal-box" class="glass">
+        <h3>Choisissez une couleur</h3>
+        <div id="color-choices">
+            <div class="color-btn" data-color="red"    style="background:#e74c3c;">Rouge</div>
+            <div class="color-btn" data-color="green"  style="background:#2ecc71;">Vert</div>
+            <div class="color-btn" data-color="blue"   style="background:#3498db;">Bleu</div>
+            <div class="color-btn" data-color="yellow" style="background:#f1c40f;color:#333;">Jaune</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal fin de partie -->
+<div id="gameover-modal" style="display:none;">
+    <div id="gameover-box" class="glass">
+        <div id="gameover-emoji" style="font-size:4rem;">&#127881;</div>
+        <h2 id="gameover-title">Partie terminee</h2>
+        <p  id="gameover-msg"></p>
+        <button id="gameover-back">Retour aux lobbies</button>
+    </div>
+</div>
+
+<!-- Panel Admin -->
+<div id="admin-panel" class="glass" style="display:none;">
+    <div class="status-bar">
+        <h2>Panel de Controle Admin</h2>
+        <button id="logout-btn" style="width:auto;padding:5px 15px;background:var(--danger-color);">Deconnexion</button>
+    </div>
+
+    <div class="admin-grid">
+        <div class="admin-sidebar">
+            <h3>Actions Serveur</h3>
+            <button id="reset-lobbies"    style="background:var(--accent-color);">Reinitialiser les Lobbies</button>
+            <button id="broadcast-msg"    style="background:var(--primary-color);">Message Global</button>
+            <button id="create-lobby-admin">Creer un Lobby</button>
+
+            <div id="server-stats" style="margin-top:20px;padding:15px;background:rgba(0,0,0,0.2);border-radius:10px;">
+                <p>Total Joueurs : <span id="admin-total-players">0</span></p>
+                <p>Total Lobbies : <span id="admin-total-lobbies">0</span></p>
+            </div>
+        </div>
+
+        <div class="admin-main">
+            <h3>Vue d'ensemble des Lobbies</h3>
+            <div id="admin-lobby-list"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/script.js"></script>
+</body>
+</html>
